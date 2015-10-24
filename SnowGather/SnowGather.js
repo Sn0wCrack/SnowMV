@@ -9,8 +9,6 @@
 var Imported = Imported || {};
 Imported["SnowGather"] = true;
 
-var popEvents = false;
-
 //=============================================================================
  /*:
  * @plugindesc A simple way to manage "gathering" type events.
@@ -81,7 +79,7 @@ var popEvents = false;
  * Usage
  * ============================================================================
  * To call the script, create an event with a plugin command
- *		SnowGather [x] [y]
+ *		SnowGather [x] [y] eventId
  * Let me explain how this works: replace x with the id of the item you want
  * the player to use, if you want them to use more than one item replace it
  * with something like: [x,y,z] NO SPACES BETWEEN THE ITEMS.
@@ -89,6 +87,9 @@ var popEvents = false;
  * y is the id of the item you want the player to harvest from this event,
  * again if you want them to have a chance of getting more than one item
  * use something like this: [x,y,z] NO SPACES BETWEEN THE ITEMS.
+ *
+ * eventId is the ID of the event you are calling this from e.g. If the event
+ * is named EV001 then you'll use SnowGather [1] [2] 1.
  *
  * If you don't want the vent to require the usage of a tool, replace [x] with
  * false.
@@ -98,8 +99,9 @@ var popEvents = false;
 var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
 Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
+Snow.Gather.PopEvents = false;
 
-Snow.Gather.WaitingEvents = {};
+Snow.Gather.WaitingEvents = [];
 								 
 Snow.Gather.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
@@ -111,21 +113,20 @@ DataManager.isDatabaseLoaded = function() {
 };
 
 if (Imported["OrangeTimeSystem"]) {
-		popEvents = true;
-		Snow.Gather._onChangeHour = OrangeTimeSystem._onChangeHour;
-		OrangeTimeSystem._onChangeHour = function() {
+	Snow.Gather.PopEvents = true;
+	Snow.Gather._onChangeHour = OrangeTimeSystem._onChangeHour;
+	OrangeTimeSystem._onChangeHour = function() {
 		Snow.Gather._onChangeHour().call(this);
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
 			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
 			if($dataMap.mapId == Snow.Gather.WaitingEvents[i].eventData.mapId && Snow.Gather.WaitingEvents[i].timeRemaing == 0)
 			{
-				$dataMap.events.push(eventData);
+				$gameSelfSwitches.setValue([Snow.Gather.WaitingEvents[i].eventData.mapId, Snow.Gather.WaitingEvents[i].evenData.eventId, "A"], false);
+				Snow.Gather.WaitingEvents.splice(i, 1);
 			}
 		}
 	}
 }
-
-console.log(popEvents);
 
 Snow.Gather.Game_Map_setup = Game_Map.prototype.setup;
 Game_Map.prototype.setup = function(mapId) {
@@ -202,7 +203,7 @@ Snow.Gather.Round = function(value, decimals) {
 	return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
 }
 
-Snow.Gather.Gather = function(requiredItems, recievableItems) {
+Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 	if (requiredItems == false) {
 		var itemisedRecievableItems = [];
 		for (var i = 0; i < recievableItems.length; i++) {
@@ -219,8 +220,15 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 				$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 			}
 		}
-	}
-	else {
+		if (Snow.Gather.PopEvents) {
+			Snow.Gather.WaitingEvents.push({
+				eventData: $dataMap.events[eventId], 
+				timeRemaing: $dataMap.events[eventId].respawnTime
+			});
+			$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
+			console.log("Destroyed event: " + eventId);
+		}
+	} else {
 		var itemisedRequiredItems = [];
 		var itemisedRecievableItems = [];
 		for (var i = 0; i < requiredItems.length; i++) {
@@ -260,6 +268,16 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 					$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", itemisedRequiredItems[i].name));
 				}
 			}
+			
+			if (Snow.Gather.PopEvents) {
+				Snow.Gather.WaitingEvents.push({
+					eventData: $dataMap.events[eventId], 
+					timeRemaing: $dataMap.events[eventId].respawnTime
+				});
+				$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
+				console.log("Destroyed event: " + eventId);
+			}
+			
 		} else {
 			var concatItems = "";
 			for (var i = 0; i < itemisedRequiredItems.length; i++)
@@ -283,6 +301,6 @@ var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
 	_Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
-		Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]));
+		Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]));
 	}
 }
