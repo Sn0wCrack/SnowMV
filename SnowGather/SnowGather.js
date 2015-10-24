@@ -24,6 +24,8 @@ Imported.Snow_Gather = true;
  * Please see https://github.com/Sn0wCrack/SnowMV/blob/master/LICENSE for license
  * details.
  *
+ * If you use this script, please give credit!
+ *
  * ============================================================================
  * Setup
  * ============================================================================
