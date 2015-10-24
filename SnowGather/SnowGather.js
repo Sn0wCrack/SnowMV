@@ -62,10 +62,8 @@ Imported.Snow_Gather = true;
  * ============================================================================
  * Usage
  * ============================================================================
- * To call the script, create an event with a a script call 
- * (That is the "Advanced -> Script..." command not Plugin Command) 
- * and put the following in:
- *		Snow.Gather.Gather([x], [y]);
+ * To call the script, create an event with a plugin command
+ *		SnowGather [x] [y]
  * Let me explain how this works: replace x with the id of the item you want
  * the player to use, if you want them to use more than one item replace it
  * with something like: [x, y, z].
@@ -215,5 +213,12 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 			$gameMessage.add("You don't have the right tool for the job, you need\n" + concatItems + "\nTo gather items here.");
 		}
 	}
-	
 }
+
+var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+Game_Interpreter.prototype.pluginCommand = function(command, args) {
+	_Game_Interpreter_pluginCommand.call(this, command, args);
+	if (command === "SnowGather") {
+		Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]));
+	}
+};
