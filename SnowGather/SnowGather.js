@@ -7,7 +7,7 @@
 "use strict";
 
 var Imported = Imported || {};
-Imported.Snow_Gather = true;
+Imported["SnowGather"] = true;
 
 //=============================================================================
  /*:
@@ -199,7 +199,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 			if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 				var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 				$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-				$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
+				$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
 			} else {
 				$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 			}
@@ -233,7 +233,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
+					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
 				} else {
 					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 				}
@@ -242,7 +242,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 			for (var i = 0; i < itemisedRequiredItems.length; i++) {
 				if (Snow.Gather.RandomInt() < itemisedRequiredItems[i].chanceBreak) {
 					$gameParty.loseItem(itemisedRequiredItems[i], 1);
-					$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", itemisedRequiredItem[i].name));
+					$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", itemisedRequiredItems[i].name));
 				}
 			}
 		} else {
@@ -259,7 +259,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 					concatItems += ", ";
 				}
 			}
-			$gameMessage.add(Snow.Gather.Paramaters["Incorrect Tools Message"].replace("%1", concatItems));
+			$gameMessage.add(Snow.Gather.Parameters["Incorrect Tools Message"].replace("%1", concatItems));
 		}
 	}
 }
