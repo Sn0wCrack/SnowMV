@@ -9,6 +9,8 @@
 var Imported = Imported || {};
 Imported["SnowGather"] = true;
 
+var popEvents = false;
+
 //=============================================================================
  /*:
  * @plugindesc A simple way to manage "gathering" type events.
@@ -97,11 +99,7 @@ var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
 Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 
-Snow.Gather.WaitingEvents = {}; /*
-								 * [0]:
-								 *      eventData
-								 *      timeRemaining
-								 */
+Snow.Gather.WaitingEvents = {};
 								 
 Snow.Gather.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
@@ -111,6 +109,23 @@ DataManager.isDatabaseLoaded = function() {
 	this.processNotetagsSnowGather($dataItems);
 	return true;
 };
+
+if (Imported["OrangeTimeSystem"]) {
+		popEvents = true;
+		Snow.Gather._onChangeHour = OrangeTimeSystem._onChangeHour;
+		OrangeTimeSystem._onChangeHour = function() {
+		Snow.Gather._onChangeHour().call(this);
+		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
+			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
+			if($dataMap.mapId == Snow.Gather.WaitingEvents[i].eventData.mapId && Snow.Gather.WaitingEvents[i].timeRemaing == 0)
+			{
+				$dataMap.events.push(eventData);
+			}
+		}
+	}
+}
+
+console.log(popEvents);
 
 Snow.Gather.Game_Map_setup = Game_Map.prototype.setup;
 Game_Map.prototype.setup = function(mapId) {
