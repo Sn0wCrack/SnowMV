@@ -1,7 +1,7 @@
 //=============================================================================
 // Snow Scripts - Simple Gathering
 // SnowGather.js
-// Version: 1.0.2
+// Version: 1.1.0
 //=============================================================================
 
 "use strict";
@@ -13,6 +13,22 @@ Imported.Snow_Gather = true;
  /*:
  * @plugindesc A simple way to manage "gathering" type events.
  * @author Sn0wCrack
+ *
+ * @param Successful Harvest Message
+ * @desc Message to display upon sucessful harvest, %1 is the amount, %2 is the item name
+ * @default You gathered %1 %2.
+ *
+ * @param Unsuccessful Harvest Message
+ * @desc Message to display upon failing to harvest items
+ * @default Failed to harvest any resources.
+ *
+ * @param Item Broken Message
+ * @desc Message to display when an item breaks upon harvesting, %1 is the item name
+ * @default Your %1 broke while harvesting!
+ *
+ * @param Incorrect Tools Message
+ * @desc Message to display when you don't have the right tools, %1 is the tools formatted for grammar
+ * @default You don't have the right tool for the job, you need\n%1\nTo gather items here.
  *
  * @help
  * ============================================================================
@@ -79,6 +95,7 @@ Imported.Snow_Gather = true;
 
 var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
+Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 
 Snow.Gather.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
@@ -146,9 +163,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-					$gameMessage.add("You gathered " + itemGathered + " " + itemisedRecievableItems[i].name);
+					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
 				} else {
-					$gameMessage.add("Failed to harvest any resources.");
+					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 				}
 		}
 	}
@@ -180,16 +197,16 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-					$gameMessage.add("You gathered " + itemGathered + " " + itemisedRecievableItems[i].name);
+					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
 				} else {
-					$gameMessage.add("Failed to harvest any resources.");
+					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 				}
 			}
 		
 			for (var i = 0; i < itemisedRequiredItems.length; i++) {
 				if (Snow.Gather.RandomInt() < itemisedRequiredItems[i].chanceBreak) {
 					$gameParty.loseItem(itemisedRequiredItems[i], 1);
-					$gameMessage.add("Your " + itemisedRequiredItems[i].name + " broke while harvesting!");
+					$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", itemisedRequiredItem[i].name));
 				}
 			}
 		} else {
@@ -206,7 +223,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 					concatItems += ", ";
 				}
 			}
-			$gameMessage.add("You don't have the right tool for the job, you need\n" + concatItems + "\nTo gather items here.");
+			$gameMessage.add(Snow.Gather.Paramaters["Incorrect Tools Message"].replace("%1", concatItems));
 		}
 	}
 }
