@@ -4,6 +4,8 @@
 // Version: 1.00
 //=============================================================================
 
+"use strict";
+
 var Imported = Imported || {};
 Imported.Snow_Gather = true;
 
@@ -63,7 +65,7 @@ Imported.Snow_Gather = true;
  * To call the script, create an event with a a script call 
  * (That is the "Advanced -> Script..." command not Plugin Command) 
  * and put the following in:
- *		Snow.Gather([x], [y]);
+ *		Snow.Gather.Gather([x], [y]);
  * Let me explain how this works: replace x with the id of the item you want
  * the player to use, if you want them to use more than one item replace it
  * with something like: [x, y, z].
@@ -78,15 +80,16 @@ Imported.Snow_Gather = true;
 //=============================================================================
 
 var Snow = Snow || {};
+Snow.Gather = Snow.Gather || {};
 
-Snow.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
+Snow.Gather.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
-    if (!Snow.DataManager_isDatabaseLoaded.call(this)) return false;
-		this.processNotetags($dataItems);
+    if (!Snow.Gather.DataManager_isDatabaseLoaded.call(this)) return false;
+		this.processNotetagsSnowGather($dataItems);
 		return true;
 };
 
-DataManager.processNotetags = function(group) {
+DataManager.processNotetagsSnowGather = function(group) {
 	var note1 = /<(?:HARVEST CHANCE BOOST):[ ](\d+)([%%])>/i;
 	var note2 = /<(?:CHANCE BREAK):[ ](\d+)([%%])>/i;
 	var note3 = /<(?:CHANCE HARVEST):[ ](\d+)([%%])>/i;
@@ -117,33 +120,33 @@ DataManager.processNotetags = function(group) {
 	}
 }
 
-Snow.idIntoItem = function(id) {
+Snow.Gather.idIntoItem = function(id) {
 	return $dataItems[id];
 }
 
-Snow.RandomInt = function() {
-	return Snow.Round(Math.random(), 2);
+Snow.Gather.RandomInt = function() {
+	return Snow.Gather.Round(Math.random(), 2);
 }
 
-Snow.RandomIntRange = function(min, max) {
+Snow.Gather.RandomIntRange = function(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-Snow.Round = function(value, decimals) {
+Snow.Gather.Round = function(value, decimals) {
 	return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
 }
 
-Snow.Gather = function(requiredItems, recievableItems) {
+Snow.Gather.Gather = function(requiredItems, recievableItems) {
 	if (requiredItems == false) {
 		var itemisedRecievableItems = [];
 		for (var i = 0; i < recievableItems.length; i++) {
-			itemisedRecievableItems[i] = Snow.idIntoItem(recievableItems[i]);
+			itemisedRecievableItems[i] = Snow.Gather.idIntoItem(recievableItems[i]);
 		}
 		
 		for (var i = 0; i < itemisedRecievableItems.length; i++) {
-				var gen = Math.max(0, Snow.RandomInt();
+				var gen = Math.max(0, Snow.Gather.RandomInt());
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
-					var itemGathered = Snow.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
+					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
 					$gameMessage.add("You gathered " + itemGathered + " " + itemisedRecievableItems[i].name);
 				} else {
@@ -155,10 +158,10 @@ Snow.Gather = function(requiredItems, recievableItems) {
 		var itemisedRequiredItems = [];
 		var itemisedRecievableItems = [];
 		for (var i = 0; i < requiredItems.length; i++) {
-			itemisedRequiredItems[i] = Snow.idIntoItem(requiredItems[i]);
+			itemisedRequiredItems[i] = Snow.Gather.idIntoItem(requiredItems[i]);
 		}
 		for (var i = 0; i < recievableItems.length; i++) {
-			itemisedRecievableItems[i] = Snow.idIntoItem(recievableItems[i]);
+			itemisedRecievableItems[i] = Snow.Gather.idIntoItem(recievableItems[i]);
 		}
 	
 		var gotItems = [];
@@ -175,9 +178,9 @@ Snow.Gather = function(requiredItems, recievableItems) {
 			}
 		
 			for (var i = 0; i < itemisedRecievableItems.length; i++) {
-				var gen = Math.max(0, Snow.RandomInt() - totalHarvestBoost);
+				var gen = Math.max(0, Snow.Gather.RandomInt() - totalHarvestBoost);
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
-					var itemGathered = Snow.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
+					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
 					$gameMessage.add("You gathered " + itemGathered + " " + itemisedRecievableItems[i].name);
 				} else {
@@ -186,7 +189,7 @@ Snow.Gather = function(requiredItems, recievableItems) {
 			}
 		
 			for (var i = 0; i < itemisedRequiredItems.length; i++) {
-				if (Snow.RandomInt() < itemisedRequiredItems[i].chanceBreak) {
+				if (Snow.Gather.RandomInt() < itemisedRequiredItems[i].chanceBreak) {
 					$gameParty.loseItem(itemisedRequiredItems[i], 1);
 					$gameMessage.add("Your " + itemisedRequiredItems[i].name + " broke while harvesting!");
 				}
@@ -214,4 +217,3 @@ Snow.Gather = function(requiredItems, recievableItems) {
 	}
 	
 }
-
