@@ -97,11 +97,28 @@ var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
 Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 
+Snow.Gather.WaitingEvents = {}; /*
+								 * [0]:
+								 *		mapId
+								 *      eventId
+								 *      timeRemaining
+								 */
+								 
 Snow.Gather.DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
 DataManager.isDatabaseLoaded = function() {
-    if (!Snow.Gather.DataManager_isDatabaseLoaded.call(this)) return false;
-		this.processNotetagsSnowGather($dataItems);
-		return true;
+    if (!Snow.Gather.DataManager_isDatabaseLoaded.call(this)) {
+		return false;
+	}
+	this.processNotetagsSnowGather($dataItems);
+	return true;
+};
+
+Snow.Gather.Game_Map_setup = Game_Map.prototype.setup;
+Game_Map.prototype.setup = function(mapId) {
+    if ($dataMap) {
+		DataManager.processNotetagsEvents();
+	}
+	Snow.Gather.Game_Map_setup.call(this, mapId);
 };
 
 DataManager.processNotetagsSnowGather = function(group) {
@@ -130,6 +147,25 @@ DataManager.processNotetagsSnowGather = function(group) {
 			}
 			if (line.match(note5)) {
 				obj.harvestMaximum = parseInt(RegExp.$1);
+			}
+		}
+	}
+}
+
+DataManager.processNotetagsEvents = function() {
+	var note = /<(?:RESPAWN TIME):[ ](\d+)>/i;
+	
+	if (!$dataMap) {
+		return;
+	}
+	for (var i = 1; i < $dataMap.events.length; i++) {
+		if ($dataMap.events[i].note) {
+			var notedata = $dataMap.events[i].note.split(/[\r\n]+/);
+			for (var i = 0; i < notedata.length; i++) {
+				var line = notedata[i];
+				if (line.match(note)) {
+					//$dataMap.events[i].respawnTime = parseInt(RegExp.$1);
+				}
 			}
 		}
 	}
