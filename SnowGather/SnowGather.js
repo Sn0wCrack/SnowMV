@@ -1,7 +1,7 @@
 //=============================================================================
 // Snow Scripts - Simple Gathering
 // SnowGather.js
-// Version: 1.0.1
+// Version: 1.0.2
 //=============================================================================
 
 "use strict";
@@ -66,11 +66,11 @@ Imported.Snow_Gather = true;
  *		SnowGather [x] [y]
  * Let me explain how this works: replace x with the id of the item you want
  * the player to use, if you want them to use more than one item replace it
- * with something like: [x, y, z].
+ * with something like: [x,y,z] NO SPACES BETWEEN THE ITEMS.
  *
  * y is the id of the item you want the player to harvest from this event,
  * again if you want them to have a chance of getting more than one item
- * use something like this: [x, y, z].
+ * use something like this: [x,y,z] NO SPACES BETWEEN THE ITEMS.
  *
  * If you don't want the vent to require the usage of a tool, replace [x] with
  * false.
@@ -198,14 +198,10 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 			{
 				if (i == itemisedRequiredItems.length - 1)
 				{
-					concatItems += "a ";
+					concatItems += "and ";
 				}
-				concatItems += itemisedRequiredItems[i].name;
-				if (i == itemisedRequiredItems.length)
-				{
-					concatItems += " and ";
-				}
-				else if (itemisedRequiredItems.length != 1 && i != itemisedRequiredItems.length)
+				concatItems += "a " + itemisedRequiredItems[i].name;
+				if (i != itemisedRequiredItems.length - 1)
 				{
 					concatItems += ", ";
 				}
@@ -221,4 +217,4 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 	if (command === "SnowGather") {
 		Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]));
 	}
-};
+}
