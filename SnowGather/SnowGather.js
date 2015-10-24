@@ -99,8 +99,7 @@ Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 
 Snow.Gather.WaitingEvents = {}; /*
 								 * [0]:
-								 *		mapId
-								 *      eventId
+								 *      eventData
 								 *      timeRemaining
 								 */
 								 
@@ -160,11 +159,12 @@ DataManager.processNotetagsEvents = function() {
 	}
 	for (var i = 1; i < $dataMap.events.length; i++) {
 		if ($dataMap.events[i].note) {
-			var notedata = $dataMap.events[i].note.split(/[\r\n]+/);
+			var event = $dataMap.events[i];
+			var notedata = event.note.split(/[\r\n]+/);
 			for (var i = 0; i < notedata.length; i++) {
 				var line = notedata[i];
 				if (line.match(note)) {
-					//$dataMap.events[i].respawnTime = parseInt(RegExp.$1);
+					event.respawnTime = parseInt(RegExp.$1);
 				}
 			}
 		}
@@ -195,14 +195,14 @@ Snow.Gather.Gather = function(requiredItems, recievableItems) {
 		}
 		
 		for (var i = 0; i < itemisedRecievableItems.length; i++) {
-				var gen = Math.max(0, Snow.Gather.RandomInt());
-				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
-					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
-					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
-				} else {
-					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
-				}
+			var gen = Math.max(0, Snow.Gather.RandomInt());
+			if (gen <= itemisedRecievableItems[i].chanceHarvest) {
+				var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
+				$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
+				$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecieveableItems[i].name));
+			} else {
+				$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
+			}
 		}
 	}
 	else {
