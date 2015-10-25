@@ -133,7 +133,7 @@ DataManager.isDatabaseLoaded = function() {
 	return true;
 };
 
-if (Imported["OrangeTimeSystem"] && eval(String(Snow.Gather.Parameters["Respawning Events"]))) {
+if (Imported["OrangeTimeSystem"] && MVC.Boolean(String(Snow.Gather.Parameters["Respawning Events"]))) {
 	Snow.Gather.PopEvents = true;
 	Snow.Gather.onChangeHour = function() {
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
