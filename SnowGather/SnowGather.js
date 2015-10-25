@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.2.1
+// Version: 1.2.2
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.2.0", {
+PluginManager.register("SnowGather", "1.2.2", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -135,10 +135,7 @@ DataManager.isDatabaseLoaded = function() {
 
 if (Imported["OrangeTimeSystem"] && eval(String(Snow.Gather.Parameters["Respawning Events"]))) {
 	Snow.Gather.PopEvents = true;
-	Snow.Gather.onChangeHour = OrangeTimeSystem._onChangeHour;
-	OrangeTimeSystem._onChangeHour = function() {
-		// Snow.Gather.onChangeHour().call(this);
-		console.log("1 Hour Past...");
+	Snow.Gather.onChangeHour = function() {
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
 			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
 			if($dataMap.events[Snow.Gather.WaitingEvents[i].eventData.id] == Snow.Gather.WaitingEvents[i].eventData && Snow.Gather.WaitingEvents[i].timeRemaining == 0)
@@ -149,6 +146,7 @@ if (Imported["OrangeTimeSystem"] && eval(String(Snow.Gather.Parameters["Respawni
 			}
 		}
 	}
+	OrangeTimeSystem.on('changeHour', Snow.Gather.onChangeHour);
 }
 
 Snow.Gather.Game_Map_setup = Game_Map.prototype.setup;
