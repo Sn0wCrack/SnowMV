@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.2.2
+// Version: 1.2.3
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.2.2", {
+PluginManager.register("SnowGather", "1.2.3", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -213,7 +213,7 @@ Snow.Gather.idIntoItem = function(id) {
 }
 
 Snow.Gather.RandomInt = function() {
-	return Snow.Gather.Round(Math.random(), 2);
+	return Math.random();
 }
 
 Snow.Gather.RandomIntRange = function(min, max) {
@@ -233,7 +233,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 		}
 		
 		for (var i = 0; i < itemisedRecievableItems.length; i++) {
-			var gen = Math.max(0, Snow.Gather.RandomInt());
+			var gen = Snow.Gather.Round(Snow.Gather.RandomInt(), 2);
 			if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 				var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 				$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
@@ -275,7 +275,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 			}
 		
 			for (var i = 0; i < itemisedRecievableItems.length; i++) {
-				var gen = Math.max(0, Snow.Gather.RandomInt() - totalHarvestBoost);
+				var gen = Snow.Gather.Round(Math.max(0, Snow.Gather.RandomInt() - totalHarvestBoost), 2);
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
