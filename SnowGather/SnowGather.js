@@ -63,7 +63,7 @@ Imported["SnowGather"] = true;
  *
  * Harvestables:
  *
- * <Chance Harvest: x%>
+ * <Harvest Chance: x%>
  * The percentage chance of finding the item from gathering, e.g
  * 90% wil be found 90% of the time, 100% will always be found.
  *
@@ -139,7 +139,7 @@ Game_Map.prototype.setup = function(mapId) {
 DataManager.processNotetagsSnowGather = function(group) {
 	var note1 = /<(?:HARVEST CHANCE BOOST):[ ](\d+)([%%])>/i;
 	var note2 = /<(?:CHANCE BREAK):[ ](\d+)([%%])>/i;
-	var note3 = /<(?:CHANCE HARVEST):[ ](\d+)([%%])>/i;
+	var note3 = /<(?:HARVEST CHANCE):[ ](\d+)([%%])>/i;
 	var note4 = /<(?:HARVEST MINIMUM):[ ](\d+)>/i;
 	var note5 = /<(?:HARVEST MAXIMUM):[ ](\d+)>/i;
 	
