@@ -52,26 +52,26 @@ Imported["SnowGather"] = true;
  *
  * Havesting Tools:
  *
- * <Harvest Chance Boost: x%>
+ * <Harvest Chance Boost: x%> - Not Required
  * This tag allows you to set an amount this particular item will boost
  * the chances of you finding items.
  *
- * <Chance Break: x%>
+ * <Chance Break: x%> - Required
  * This tag allows you to set the percentage of the time the tool will,
  * break after use, e.g. 90% will break 90% of the time, 0% will never break.
  *
  *
  * Harvestables:
  *
- * <Harvest Chance: x%>
+ * <Harvest Chance: x%> - Required
  * The percentage chance of finding the item from gathering, e.g
  * 90% wil be found 90% of the time, 100% will always be found.
  *
- * <Harvest Minimum: x>
+ * <Harvest Minimum: x> - Required
  * The minimum amount of the item to be found upon the successful harvesting of 
  * it.
  *
- * <Harvest Maximum: x>
+ * <Harvest Maximum: x> - Required
  * The maximum amount of the item to be found upon the successful harvesting of 
  * it.
  *
@@ -89,7 +89,8 @@ Imported["SnowGather"] = true;
  * use something like this: [x,y,z] NO SPACES BETWEEN THE ITEMS.
  *
  * eventId is the ID of the event you are calling this from e.g. If the event
- * is named EV001 then you'll use SnowGather [1] [2] 1.
+ * is named EV001 then you'll use SnowGather [1] [2] 1. This is not requiured
+ * if you are not using the time system.
  *
  * If you don't want the vent to require the usage of a tool, replace [x] with
  * false.
@@ -204,6 +205,7 @@ Snow.Gather.Round = function(value, decimals) {
 }
 
 Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
+	eventId = eventId || 0;
 	if (requiredItems == false) {
 		var itemisedRecievableItems = [];
 		for (var i = 0; i < recievableItems.length; i++) {
@@ -303,6 +305,11 @@ var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
 	_Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
-		Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]));
+		if (args[2]) {
+			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]));
+		} else {
+			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]))
+		}
+		
 	}
 }
