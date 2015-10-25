@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.2.3
+// Version: 1.2.4
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.2.3", {
+PluginManager.register("SnowGather", "1.2.4", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -314,7 +314,11 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 					concatItems += ", ";
 				}
 			}
-			$gameMessage.add(Snow.Gather.Parameters["Incorrect Tools Message"].replace("%1", concatItems));
+			var lines = String(Snow.Gather.Parameters["Incorrect Tools Message"]).split("\\n");
+			console.log(lines);
+			for (var i = 0; i < lines.length; i++) {
+				$gameMessage.add(lines[i].replace("%1", concatItems));
+			}
 		}
 	}
 }
