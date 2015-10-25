@@ -1,7 +1,7 @@
 //=============================================================================
 // Snow Scripts - Simple Gathering
 // SnowGather.js
-// Version: 1.1.0
+// Version: 1.1.1
 //=============================================================================
 
 "use strict";
@@ -248,7 +248,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 		if (gotItems.length == requiredItems.length) {
 			var totalHarvestBoost = 0.0;
 			for (var i = 0; i < itemisedRequiredItems.length; i++) {
-				totalHarvestBoost += itemisedRequiredItems[i].harvestChanceBoost;
+				if (itemisedRequiredItems[i].harvestChanceBoost) {
+					totalHarvestBoost += itemisedRequiredItems[i].harvestChanceBoost;
+				}
 			}
 		
 			for (var i = 0; i < itemisedRecievableItems.length; i++) {
