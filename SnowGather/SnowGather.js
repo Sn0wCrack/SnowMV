@@ -30,6 +30,10 @@ Imported["SnowGather"] = true;
  * @desc Message to display when you don't have the right tools, %1 is the tools formatted for grammar
  * @default You don't have the right tool for the job, you need\n%1\nTo gather items here.
  *
+ * @param Respawing Events
+ * @desc Override the default option when having a time system installed, true = ON, false = OFF
+ * @default true
+ *
  * @help
  * ============================================================================
  * Introduction
@@ -75,6 +79,11 @@ Imported["SnowGather"] = true;
  * The maximum amount of the item to be found upon the successful harvesting of 
  * it.
  *
+ * Events:
+ *
+ * <Repsawn Time: x> - Required if you want respawing events (Requires OrangeTimeSystem)
+ * Sets how long in hours you want the event to respawn in
+ *
  * ============================================================================
  * Usage
  * ============================================================================
@@ -94,6 +103,14 @@ Imported["SnowGather"] = true;
  *
  * If you don't want the vent to require the usage of a tool, replace [x] with
  * false.
+ *
+ * Repsawning Events:
+ *
+ * In order for an event to actually despawn and then respawn afte the allotted
+ * time, you must first create second event page, on this page you just have to
+ * have the self switch for "A" checked as a condition, leave everything else 
+ * blank.
+ *
  */
 //=============================================================================
 
@@ -113,7 +130,7 @@ DataManager.isDatabaseLoaded = function() {
 	return true;
 };
 
-if (Imported["OrangeTimeSystem"]) {
+if (Imported["OrangeTimeSystem"] && eval(Snow.Gather.Parameters["Respawning Events"])) {
 	Snow.Gather.PopEvents = true;
 	Snow.Gather.onChangeHour = OrangeTimeSystem._onChangeHour;
 	OrangeTimeSystem._onChangeHour = function() {
@@ -121,9 +138,9 @@ if (Imported["OrangeTimeSystem"]) {
 		console.log("1 Hour Past...");
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
 			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
-			if($dataMap.mapId == Snow.Gather.WaitingEvents[i].eventData.mapId && Snow.Gather.WaitingEvents[i].timeRemaining == 0)
+			if($dataMap.events[Snow.Gather.WaitingEvents[i].eventData.id] == Snow.Gather.WaitingEvents[i].eventData && Snow.Gather.WaitingEvents[i].timeRemaining == 0)
 			{
-				var key = [Snow.Gather.WaitingEvents[i].eventData.mapId, Snow.Gather.WaitingEvents[i].eventData.id, "A"];
+				var key = [$gameMap.mapId(), Snow.Gather.WaitingEvents[i].eventData.id, "A"];
 				$gameSelfSwitches.setValue(key, false);
 				Snow.Gather.WaitingEvents.splice(i, 1);
 			}
@@ -229,7 +246,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 				eventData: $dataMap.events[eventId], 
 				timeRemaining: $dataMap.events[eventId].respawnTime
 			});
-			$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
+			$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
 		}
 	} else {
 		var itemisedRequiredItems = [];
@@ -279,7 +296,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 					eventData: $dataMap.events[eventId], 
 					timeRemaining: $dataMap.events[eventId].respawnTime
 				});
-				$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
+				$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
 			}
 			
 		} else {
