@@ -1,13 +1,16 @@
 //=============================================================================
-// Snow Scripts - Simple Gathering
+// SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.1.1
+// Version: 1.2.0
 //=============================================================================
 
 "use strict";
 
-var Imported = Imported || {};
-Imported["SnowGather"] = true;
+PluginManager.register("SnowGather", "1.2.0", {
+	"email": "",
+	"website": "",
+	"name": "Sn0wCrack"
+}, "2015-10-25")
 
 //=============================================================================
  /*:
