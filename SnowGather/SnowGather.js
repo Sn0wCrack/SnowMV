@@ -1,7 +1,7 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.2.0
+// Version: 1.2.1
 //=============================================================================
 
 "use strict";
@@ -33,7 +33,7 @@ PluginManager.register("SnowGather", "1.2.0", {
  * @desc Message to display when you don't have the right tools, %1 is the tools formatted for grammar
  * @default You don't have the right tool for the job, you need\n%1\nTo gather items here.
  *
- * @param Respawing Events
+ * @param Respawning Events
  * @desc Override the default option when having a time system installed, true = ON, false = OFF
  * @default true
  *
@@ -133,7 +133,7 @@ DataManager.isDatabaseLoaded = function() {
 	return true;
 };
 
-if (Imported["OrangeTimeSystem"] && eval(Snow.Gather.Parameters["Respawning Events"])) {
+if (Imported["OrangeTimeSystem"] && eval(String(Snow.Gather.Parameters["Respawning Events"]))) {
 	Snow.Gather.PopEvents = true;
 	Snow.Gather.onChangeHour = OrangeTimeSystem._onChangeHour;
 	OrangeTimeSystem._onChangeHour = function() {
