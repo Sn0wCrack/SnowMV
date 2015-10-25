@@ -115,14 +115,16 @@ DataManager.isDatabaseLoaded = function() {
 
 if (Imported["OrangeTimeSystem"]) {
 	Snow.Gather.PopEvents = true;
-	Snow.Gather._onChangeHour = OrangeTimeSystem._onChangeHour;
+	Snow.Gather.onChangeHour = OrangeTimeSystem._onChangeHour;
 	OrangeTimeSystem._onChangeHour = function() {
-		Snow.Gather._onChangeHour().call(this);
+		// Snow.Gather.onChangeHour().call(this);
+		console.log("1 Hour Past...");
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
 			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
-			if($dataMap.mapId == Snow.Gather.WaitingEvents[i].eventData.mapId && Snow.Gather.WaitingEvents[i].timeRemaing == 0)
+			if($dataMap.mapId == Snow.Gather.WaitingEvents[i].eventData.mapId && Snow.Gather.WaitingEvents[i].timeRemaining == 0)
 			{
-				$gameSelfSwitches.setValue([Snow.Gather.WaitingEvents[i].eventData.mapId, Snow.Gather.WaitingEvents[i].evenData.eventId, "A"], false);
+				var key = [Snow.Gather.WaitingEvents[i].eventData.mapId, Snow.Gather.WaitingEvents[i].eventData.id, "A"];
+				$gameSelfSwitches.setValue(key, false);
 				Snow.Gather.WaitingEvents.splice(i, 1);
 			}
 		}
@@ -225,10 +227,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 		if (Snow.Gather.PopEvents) {
 			Snow.Gather.WaitingEvents.push({
 				eventData: $dataMap.events[eventId], 
-				timeRemaing: $dataMap.events[eventId].respawnTime
+				timeRemaining: $dataMap.events[eventId].respawnTime
 			});
 			$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
-			console.log("Destroyed event: " + eventId);
 		}
 	} else {
 		var itemisedRequiredItems = [];
@@ -276,10 +277,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 			if (Snow.Gather.PopEvents) {
 				Snow.Gather.WaitingEvents.push({
 					eventData: $dataMap.events[eventId], 
-					timeRemaing: $dataMap.events[eventId].respawnTime
+					timeRemaining: $dataMap.events[eventId].respawnTime
 				});
 				$gameSelfSwitches.setValue([$dataMap.mapId, eventId, "A"], true);
-				console.log("Destroyed event: " + eventId);
 			}
 			
 		} else {
