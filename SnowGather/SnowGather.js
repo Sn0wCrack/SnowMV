@@ -315,7 +315,6 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 				}
 			}
 			var lines = String(Snow.Gather.Parameters["Incorrect Tools Message"]).split("\\n");
-			console.log(lines);
 			for (var i = 0; i < lines.length; i++) {
 				$gameMessage.add(lines[i].replace("%1", concatItems));
 			}
