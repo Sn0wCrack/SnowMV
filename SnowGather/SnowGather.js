@@ -328,9 +328,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, event) {
 	}
 }
 
-var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+Snow.Gather.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
-	_Game_Interpreter_pluginCommand.call(this, command, args);
+	Snow.Gather.Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
 		if (args[2]) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), eval(args[2]));
