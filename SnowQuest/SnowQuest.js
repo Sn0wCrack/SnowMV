@@ -130,12 +130,6 @@ QuestInformation.prototype.processHandling = function() {
     if (this.isOpenAndActive()) {
         if (this.isCancelEnabled() && this.isCancelTriggered()) {
             this.processCancel();
-		/*
-        } else if (this.isHandled('pagedown') && Input.isTriggered('pagedown')) {
-            this.processPagedown();
-        } else if (this.isHandled('pageup') && Input.isTriggered('pageup')) {
-            this.processPageup();
-		*/
         }
     }
 }
@@ -186,6 +180,8 @@ QuestList.prototype.constructor = QuestList;
 
 QuestList.prototype.initialize = function(wx, wy) {
         Window_Command.prototype.initialize.call(this, wx, wy);
+		this.deactivate();
+		this.deselect();
 }
 
 QuestList.prototype.windowWidth = function() {
@@ -196,13 +192,25 @@ QuestList.prototype.windowHeight = function() {
 	return Graphics.boxHeight - 100;
 }
 
-QuestList.prototype.makeCommandList = function() {
-    this._addQuests();
-}
-
-QuestList.prototype._addQuests = function() {
+QuestList.prototype._addQuestsAll = function() {
 	for (var i = 0; i < Snow.Quest.PlayerQuestData.length; i++) {
 		this.addCommand(Snow.Quest.PlayerQuestData[i].name, "quest" + i);
+	}
+}
+
+QuestList.prototype._addQuestsComplete = function() {
+	for (var i = 0; i < Snow.Quest.PlayerQuestData.length; i++) {
+		if (Snow.Quest.PlayerQuestData[i].status) {
+			this.addCommand(Snow.Quest.PlayerQuestData[i].name, "quest" + i);
+		}
+	}
+}
+
+QuestList.prototype._addQuestsIncomplete = function() {
+	for (var i = 0; i < Snow.Quest.PlayerQuestData.length; i++) {
+		if (!Snow.Quest.PlayerQuestData[i].status) {
+			this.addCommand(Snow.Quest.PlayerQuestData[i].name, "quest" + i);
+		}
 	}
 }
 
@@ -219,6 +227,8 @@ QuestTypeChoice.prototype.constructor = QuestTypeChoice;
 
 QuestTypeChoice.prototype.initialize = function(wx, wy, ww, wh) {
 	Window_Selectable.prototype.initialize.call(this, wx, wy, ww, wh);
+	this._index = 0;
+	this.activate();
 	this.refresh();
 }
 
@@ -298,6 +308,8 @@ Journal.prototype._createQuestListTypeChoiceWindow = function() {
 		ww = 245,
 		wh = 100;
 	this._questTypeChoiceWindow = new Snow.Quest.Windows.QuestTypeChoice(wx, wy, ww, wh);
+	this._questTypeChoiceWindow.setHandler('ok', this._onQuestListTypeChoiceOK.bind(this));
+	this._questTypeChoiceWindow.setHandler('cancel', this._onQuestListTypeChoiceCancel.bind(this))
 	this.addWindow(this._questTypeChoiceWindow);
 }
 
@@ -321,17 +333,52 @@ Journal.prototype._createQuestInformationWindow = function() {
 }
 
 Journal.prototype._onQuestListOK = function() {
-	var questId = Number(this._questListCommandWindow.currentSymbol().replace("quest"));
+	var questId = Number(this._questListCommandWindow.currentSymbol().replace("quest", ""));
+	this._questInformationWindow.drawText(Snow.Quest.PlayerQuestData[questId].name, 0, 0, this._questInformationWindow.contentsWidth(), 'left');
 	this._questInformationWindow.activate();
 }
 
 Journal.prototype._onQuestListCancel = function() {
 	this._questTypeChoiceWindow.activate();
+	this._questListCommandWindow.clearCommandList();
 	this._questListCommandWindow.deselect();
 }
 
 Journal.prototype._onQuestInformationCancel = function() {
+	this._questInformationWindow.refresh();
 	this._questListCommandWindow.activate();
+}
+
+Journal.prototype._onQuestListTypeChoiceOK = function() {
+	var index = this._questTypeChoiceWindow._index;
+	this._questListCommandWindow.clearCommandList();
+	switch(this._questTypeChoiceWindow._data[index]) {
+		case "All Quests":
+			this._questListCommandWindow._addQuestsAll();
+			break;
+		case "Complete Quests":
+			this._questListCommandWindow._addQuestsComplete();
+			break;
+		case "Incomplete Quests":
+			this._questListCommandWindow._addQuestsIncomplete();
+			break;
+		default:
+			break;
+	}
+	if (this._questListCommandWindow.maxItems() > 0) {
+		for (var i = 0; i < this._questListCommandWindow.maxItems(); i++) {
+			this._questListCommandWindow.drawItem(i);
+		}
+		this._questListCommandWindow.activate();
+		this._questListCommandWindow.select(0);
+	} else {
+		SoundManager.playBuzzer();
+		this._questTypeChoiceWindow.activate();
+	}
+}
+
+Journal.prototype._onQuestListTypeChoiceCancel = function() {
+	this.popScene();
 }
 
 Snow.Quest.Scenes.Journal = Journal;
