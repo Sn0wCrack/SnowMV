@@ -209,7 +209,7 @@ Snow.Gather.Round = function(value, decimals) {
 }
 
 Snow.Gather.Gather = function(requiredItems, recievableItems, event) {
-	event = event || {eventId: 0};
+	event = event || {_eventId: 0};
 	var eventId = event._eventId;
 	if (requiredItems == false) {
 		var itemisedRecievableItems = [];
