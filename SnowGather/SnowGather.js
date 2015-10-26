@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.3.0
+// Version: 1.3.1
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.3.0", {
+PluginManager.register("SnowGather", "1.3.1", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -36,6 +36,18 @@ PluginManager.register("SnowGather", "1.3.0", {
  * @param Respawning Events
  * @desc Override the default option when having a time system installed, true = ON, false = OFF
  * @default true
+ *
+ * @param Manual Self Switches
+ * @desc If you wish to manually set self switches in your event for despawning them, true = ON, false = OFF
+ * @default false
+ *
+ * @param Last Result Store
+ * @desc If you want to store the last result of a harvest as a variable, true = ON, false = OFF
+ * @default true
+ *
+ * @param Last Result Variable ID
+ * @desc The variable to store the last result in, 0 = success, 1 = failure, 2 = incorrect tools
+ * @default 1
  *
  * @help
  * ============================================================================
@@ -210,8 +222,14 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 			if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 				var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 				$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
+				if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+					$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 0); 
+				}
 				$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
 			} else {
+				if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+					$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
+				}
 				$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 			}
 		}
@@ -220,7 +238,10 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 				eventData: $dataMap.events[eventId], 
 				timeRemaining: Number($dataMap.events[eventId].meta["Respawn Time"])
 			});
-			$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
+			if (!MVC.Boolean(String(Snow.Gather.Parameters["Manual Self Switches"])))
+			{
+				$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
+			}
 		}
 	} else {
 		var itemisedRequiredItems = [];
@@ -252,8 +273,14 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
 					var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 					$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
+					if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+						$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 0); 
+					}
 					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
 				} else {
+					if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+						$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
+					}
 					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 				}
 			}
@@ -270,7 +297,10 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 					eventData: $dataMap.events[eventId], 
 					timeRemaining: Number($dataMap.events[eventId].meta["Respawn Time"])
 				});
-				$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
+				if (!MVC.Boolean(String(Snow.Gather.Parameters["Manual Self Switches"])))
+				{
+					$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
+				}
 			}
 			
 		} else {
@@ -288,6 +318,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 				}
 			}
 			var lines = String(Snow.Gather.Parameters["Incorrect Tools Message"]).split("\\n");
+			if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+				$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 2); 
+			}
 			for (var i = 0; i < lines.length; i++) {
 				$gameMessage.add(lines[i].replace("%1", concatItems));
 			}
