@@ -33,6 +33,10 @@ PluginManager.register("SnowQuest", "1.0.0", {
  * @desc
  * @default 3
  *
+ * @param Completed Quest Colour
+ * @desc Hexidecimal colour that completed quests show up in
+ * @default #0099ff
+ *
  * @help
  * ============================================================================
  * Introduction
@@ -192,6 +196,19 @@ QuestList.prototype.windowHeight = function() {
 	return Graphics.boxHeight - 100;
 }
 
+QuestList.prototype.drawText = function(text, x, y, maxWidth, align, color) {
+	this.changeTextColor(color);
+	this.contents.drawText(text, x, y, maxWidth, this.lineHeight(), align);
+}
+
+QuestList.prototype.drawItem = function(index, color) {
+    var rect = this.itemRectForText(index);
+    var align = this.itemTextAlign();
+    this.resetTextColor();
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawText(this.commandName(index), rect.x, rect.y, rect.width, align, color);
+}
+
 QuestList.prototype._addQuestsAll = function() {
 	for (var i = 0; i < Snow.Quest.PlayerQuestData.length; i++) {
 		this.addCommand(Snow.Quest.PlayerQuestData[i].name, "quest" + i);
@@ -208,7 +225,7 @@ QuestList.prototype._addQuestsComplete = function() {
 
 QuestList.prototype._addQuestsIncomplete = function() {
 	for (var i = 0; i < Snow.Quest.PlayerQuestData.length; i++) {
-		if (!Snow.Quest.PlayerQuestData[i].status) {
+		if (!Snow.Quest.PlayerQuestData[i].status || Snow.Quest.PlayerQuestData[i].status === undefined) {
 			this.addCommand(Snow.Quest.PlayerQuestData[i].name, "quest" + i);
 		}
 	}
@@ -351,7 +368,7 @@ Journal.prototype._onQuestInformationCancel = function() {
 
 Journal.prototype._onQuestListTypeChoiceOK = function() {
 	var index = this._questTypeChoiceWindow._index;
-	this._questListCommandWindow.clearCommandList();
+	this._questListCommandWindow.refresh();
 	switch(this._questTypeChoiceWindow._data[index]) {
 		case "All Quests":
 			this._questListCommandWindow._addQuestsAll();
@@ -366,8 +383,13 @@ Journal.prototype._onQuestListTypeChoiceOK = function() {
 			break;
 	}
 	if (this._questListCommandWindow.maxItems() > 0) {
-		for (var i = 0; i < this._questListCommandWindow.maxItems(); i++) {
-			this._questListCommandWindow.drawItem(i);
+		for (var i = 0; i < this._questListCommandWindow._list.length; i++) {
+			var index = Number(this._questListCommandWindow._list[i].symbol.replace("quest", ""));
+			if (Snow.Quest.PlayerQuestData[index].status && Snow.Quest.PlayerQuestData[index].status !== undefined) {
+				this._questListCommandWindow.drawItem(i, Snow.Quest.Parameters["Completed Quest Colour"]);
+			} else {
+				this._questListCommandWindow.drawItem(i, "#ffffff");
+			}
 		}
 		this._questListCommandWindow.activate();
 		this._questListCommandWindow.select(0);
