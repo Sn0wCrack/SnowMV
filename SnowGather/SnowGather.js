@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.2.4
+// Version: 1.3.0
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.2.4", {
+PluginManager.register("SnowGather", "1.3.0", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -136,6 +136,7 @@ DataManager.isDatabaseLoaded = function() {
 if (Imported["OrangeTimeSystem"] && MVC.Boolean(String(Snow.Gather.Parameters["Respawning Events"]))) {
 	Snow.Gather.PopEvents = true;
 	Snow.Gather.onChangeHour = function() {
+		console.log("1 Hour Passess...");
 		for (var i = 0; i < Snow.Gather.WaitingEvents.length; i++) {
 			Snow.Gather.WaitingEvents[i].timeRemaining -= 1;
 			if($dataMap.events[Snow.Gather.WaitingEvents[i].eventData.id] == Snow.Gather.WaitingEvents[i].eventData && Snow.Gather.WaitingEvents[i].timeRemaining == 0)
@@ -148,14 +149,6 @@ if (Imported["OrangeTimeSystem"] && MVC.Boolean(String(Snow.Gather.Parameters["R
 	}
 	OrangeTimeSystem.on('changeHour', Snow.Gather.onChangeHour);
 }
-
-Snow.Gather.Game_Map_setup = Game_Map.prototype.setup;
-Game_Map.prototype.setup = function(mapId) {
-    if ($dataMap) {
-		DataManager.processNotetagsEvents();
-	}
-	Snow.Gather.Game_Map_setup.call(this, mapId);
-};
 
 DataManager.processNotetagsSnowGather = function(group) {
 	var note1 = /<(?:HARVEST CHANCE BOOST):[ ](\d+)([%%])>/i;
@@ -183,26 +176,6 @@ DataManager.processNotetagsSnowGather = function(group) {
 			}
 			if (line.match(note5)) {
 				obj.harvestMaximum = parseInt(RegExp.$1);
-			}
-		}
-	}
-}
-
-DataManager.processNotetagsEvents = function() {
-	var note = /<(?:RESPAWN TIME):[ ](\d+)>/i;
-	
-	if (!$dataMap) {
-		return;
-	}
-	for (var i = 1; i < $dataMap.events.length; i++) {
-		if ($dataMap.events[i].note) {
-			var event = $dataMap.events[i];
-			var notedata = event.note.split(/[\r\n]+/);
-			for (var i = 0; i < notedata.length; i++) {
-				var line = notedata[i];
-				if (line.match(note)) {
-					event.respawnTime = parseInt(RegExp.$1);
-				}
 			}
 		}
 	}
@@ -245,7 +218,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 		if (Snow.Gather.PopEvents) {
 			Snow.Gather.WaitingEvents.push({
 				eventData: $dataMap.events[eventId], 
-				timeRemaining: $dataMap.events[eventId].respawnTime
+				timeRemaining: Number($dataMap.events[eventId].meta["Respawn Time"])
 			});
 			$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
 		}
@@ -295,7 +268,7 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, eventId) {
 			if (Snow.Gather.PopEvents) {
 				Snow.Gather.WaitingEvents.push({
 					eventData: $dataMap.events[eventId], 
-					timeRemaining: $dataMap.events[eventId].respawnTime
+					timeRemaining: Number($dataMap.events[eventId].meta["Respawn Time"])
 				});
 				$gameSelfSwitches.setValue([$gameMap.mapId(), eventId, "A"], true);
 			}
