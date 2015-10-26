@@ -1,0 +1,23 @@
+[
+	{
+		"name": "Sample Quest",
+		"questGiver": "Mrs. Sampleton",
+		"description": "Mrs. Sameplton wants you to find some shit for her, becasue she's so lazy."
+		"questLevel": 1,
+		"objectives": [
+			{ "text": "Find the shit" },
+			{ "text": "Give Mrs. Sampleton the shit" }
+		]
+	},
+	
+	{
+		"name": "More Sample Quest",
+		"questGiver": "Mr. Sampleton",
+		"description": "I don't know, find the shit"
+		"questLevel": 7,
+		"objectives": [
+			{ "text": "Find the shit" },
+			{ "text": "Give Mr. Sampleton the shit" }
+		]
+	}
+]
