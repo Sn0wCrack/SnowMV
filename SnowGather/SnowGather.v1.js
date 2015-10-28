@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.js
-// Version: 1.3.2
+// Version: 1.3.3
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "1.3.2", {
+PluginManager.register("SnowGather", "1.3.3", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -130,7 +130,7 @@ PluginManager.register("SnowGather", "1.3.2", {
 
 var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
-Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
+Snow.Gather.Parameters = PluginManager.parameters("SnowGather.v1");
 Snow.Gather.PopEvents = false;
 
 Snow.Gather.WaitingEvents = [];
@@ -267,7 +267,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, event) {
 					totalHarvestBoost += itemisedRequiredItems[i].harvestChanceBoost;
 				}
 			}
-		
+			
+			var resourceGet = 0;
+			
 			for (var i = 0; i < itemisedRecievableItems.length; i++) {
 				var gen = Snow.Gather.Round(Math.max(0, Snow.Gather.RandomInt() - totalHarvestBoost), 2);
 				if (gen <= itemisedRecievableItems[i].chanceHarvest) {
@@ -277,12 +279,16 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, event) {
 						$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 0); 
 					}
 					$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
+					resourceGet++;
 				} else {
 					if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
 						$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
 					}
-					$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 				}
+			}
+			
+			if (resourceGet == 0) {
+				$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 			}
 		
 			for (var i = 0; i < itemisedRequiredItems.length; i++) {
@@ -328,9 +334,9 @@ Snow.Gather.Gather = function(requiredItems, recievableItems, event) {
 	}
 }
 
-Snow.Gather.Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
+var Snow_Gather_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
-	Snow.Gather.Game_Interpreter_pluginCommand.call(this, command, args);
+	Snow_Gather_Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
 		if (args[2]) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), eval(args[2]));
