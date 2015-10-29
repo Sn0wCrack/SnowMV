@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
-// SnowGather.js
-// Version: 2.0.0
+// SnowGather.v2.js
+// Version: 2.0.1s
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.0.0", {
+PluginManager.register("SnowGather", "2.0.1", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -449,9 +449,11 @@ Snow.Gather.Gather2 = function(chosenItem, recieveableItems, eventId) {
 					}
 				}
 				
-				if (Snow.Gather.RandomInt() < chosenItem.chanceBreak[j]) {
-					$gameParty.loseItem(chosenItem, 1);
-					$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", chosenItem.name));
+				if (chosenItem.chanceBreak) {
+					if (Snow.Gather.RandomInt() < chosenItem.chanceBreak[j]) {
+						$gameParty.loseItem(chosenItem, 1);
+						$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", chosenItem.name));
+					}
 				}
 			}
 		}
