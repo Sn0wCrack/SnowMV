@@ -1,7 +1,7 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.0.1s
+// Version: 2.0.1
 //=============================================================================
 
 "use strict";
@@ -138,7 +138,7 @@ var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
 Snow.Gather.Windows = Snow.Gather.Windows || {};
 Snow.Gather.Scenes = Snow.Gather.Scenes || {};
-Snow.Gather.Parameters = PluginManager.parameters("SnowGather.v2");
+Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 Snow.Gather.PopEvents = false;
 
 Snow.Gather.TempItems = [];

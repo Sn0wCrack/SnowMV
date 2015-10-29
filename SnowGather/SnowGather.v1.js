@@ -130,7 +130,7 @@ PluginManager.register("SnowGather", "1.3.3", {
 
 var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
-Snow.Gather.Parameters = PluginManager.parameters("SnowGather.v1");
+Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
 Snow.Gather.PopEvents = false;
 
 Snow.Gather.WaitingEvents = [];
