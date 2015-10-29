@@ -138,7 +138,7 @@ var Snow = Snow || {};
 Snow.Gather = Snow.Gather || {};
 Snow.Gather.Windows = Snow.Gather.Windows || {};
 Snow.Gather.Scenes = Snow.Gather.Scenes || {};
-Snow.Gather.Parameters = PluginManager.parameters("SnowGather");
+Snow.Gather.Parameters = PluginManager.parameters("SnowGather.v2");
 Snow.Gather.PopEvents = false;
 
 Snow.Gather.TempItems = [];
