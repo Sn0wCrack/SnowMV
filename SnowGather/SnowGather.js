@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.0.1
+// Version: 2.1.0
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.0.1", {
+PluginManager.register("SnowGather", "2.1.0", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -32,6 +32,10 @@ PluginManager.register("SnowGather", "2.0.1", {
  * @param Incorrect Tools Message
  * @desc Message to display when you don't have the right tools
  * @default You don't have any tools that can be used here.
+ *
+ * @param Hand Tool ID
+ * @desc The item ID of the tool that will be used as your hand
+ * @default 10
  *
  * @param Respawning Events
  * @desc Override the default option when having a time system installed, true = ON, false = OFF
@@ -272,8 +276,19 @@ ItemChoiceWindow.prototype.initialize = function(x, y, width, height) {
     this.select(0);
 }
 
+ItemChoiceWindow.prototype.isEnabled = function(item) {
+    return true;
+}
+
 ItemChoiceWindow.prototype.makeItemList = function() {
 	this._data = Snow.Gather.TempItems;
+}
+
+ItemChoiceWindow.prototype.drawItemNumber = function(item, x, y, width) {
+	if (this.needsNumber() && item.id != Number(Snow.Gather.Parameters["Hand Tool ID"])) {
+        this.drawText(':', x, y, width - this.textWidth('00'), 'right');
+        this.drawText($gameParty.numItems(item), x, y, width, 'right');
+    }
 }
 
 Snow.Gather.Windows.ItemChoiceWindow = ItemChoiceWindow;
@@ -352,22 +367,26 @@ Snow.Gather.Gather = function(requireItem, recievableItems, event) {
 		}
 		
 		var resourceGet = 0;
+		var hand = Snow.Gather.idIntoItem(Number(Snow.Gather.Parameters["Hand Tool ID"]));
 		
 		for (var i = 0; i < itemisedRecievableItems.length; i++) {
 			var gen = Snow.Gather.Round(Snow.Gather.RandomInt(), 2);
-			if (gen <= itemisedRecievableItems[i].chanceHarvest) {
-				var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
-				$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
-				if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
-					$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 0); 
+			for (var j = 0; j < hand.chanceHarvest.length; j++) {
+				if (hand.chaceHarvest[j].itemId == itemisedRecievableItems[i].id) {
+					if (gen <= hand.chaceHarvest[j].chanceHarvest) {
+						var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
+						$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
+						if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+							$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 0); 
+						}
+						$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
+						resourceGet++;
+					} else {
+						if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
+							$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
+						}
+					}	
 				}
-				$gameMessage.add(Snow.Gather.Parameters["Successful Harvest Message"].replace("%1", itemGathered).replace("%2", itemisedRecievableItems[i].name));
-				resourceGet++;
-			} else {
-				if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
-					$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
-				}
-				
 			}
 		}
 		
@@ -394,6 +413,18 @@ Snow.Gather.Gather = function(requireItem, recievableItems, event) {
 		
 		for (var i = 0; i < recievableItems.length; i++) {
 			itemisedRecievableItems[i] = Snow.Gather.idIntoItem(recievableItems[i]);
+		}
+		
+		var hand = Snow.Gather.idIntoItem(Number(Snow.Gather.Parameters["Hand Tool ID"]));
+		
+		for (var j = 0; j < recievableItems.length; j++) {
+			for (var k = 0; k < hand.harvestChance.length; k++) {
+				if (hand.harvestChance[k].itemId == recievableItems[j]) {
+					if (!playerUsableItems.contains(hand)) {
+						playerUsableItems.push(hand);
+					}
+				}
+			}
 		}
 		
 		for (var i = 0; i < playerInventory.length; i++) {
