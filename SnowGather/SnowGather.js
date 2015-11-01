@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.1.0
+// Version: 2.1.1
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.1.0", {
+PluginManager.register("SnowGather", "2.1.1", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -479,9 +479,18 @@ Snow.Gather.Gather2 = function(chosenItem, recieveableItems, eventId) {
 						$gameVariables.setValue(Number(Snow.Gather.Parameters["Last Result Variable ID"]), 1); 
 					}
 				}
-				
-				if (chosenItem.chanceBreak) {
-					if (Snow.Gather.RandomInt() < chosenItem.chanceBreak[j]) {
+			}
+		}
+	}
+	
+	if (chosenItem.chanceBreak !== undefined) {
+		var itemBroken = false;
+		for (var i = 0; i < recieveableItems.length; i++) {
+			for (var j = 0; j < chosenItem.chanceBreak.length; j++) {
+				if (chosenItem.chanceBreak[j].itemId == recieveableItems[i].id) {
+					var gen = Snow.Gather.Round(Snow.Gather.RandomInt(), 2);
+					if (chosenItem.chanceBreak[j].chanceBreak >= gen && !itemBroken) {
+						itemBroken = true;
 						$gameParty.loseItem(chosenItem, 1);
 						$gameMessage.add(Snow.Gather.Parameters["Item Broken Message"].replace("%1", chosenItem.name));
 					}
@@ -489,7 +498,7 @@ Snow.Gather.Gather2 = function(chosenItem, recieveableItems, eventId) {
 			}
 		}
 	}
-	
+
 	if (resourceGet == 0) {
 		$gameMessage.add(Snow.Gather.Parameters["Unsuccessful Harvest Message"]);
 	}
