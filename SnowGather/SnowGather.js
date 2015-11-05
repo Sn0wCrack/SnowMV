@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.1.1
+// Version: 2.1.2
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.1.1", {
+PluginManager.register("SnowGather", "2.1.2", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -32,6 +32,10 @@ PluginManager.register("SnowGather", "2.1.1", {
  * @param Incorrect Tools Message
  * @desc Message to display when you don't have the right tools
  * @default You don't have any tools that can be used here.
+ *
+ * @param Select Tool Message
+ * @desc Help window message you want to display when player is selecting a tool
+ * @default Please select the tool you wish to use
  *
  * @param Hand Tool ID
  * @desc The item ID of the tool that will be used as your hand
@@ -339,7 +343,7 @@ ToolChoice.prototype._createItemChoiceWindow = function() {
 
 ToolChoice.prototype._createItemChoiceHelpWindow = function() {
 	this._itemChoiceHelpWindow = new Snow.Gather.Windows.ItemChoiceHelpWindow(1);
-	this._itemChoiceHelpWindow.setText("Please select the tool you wish to use");
+	this._itemChoiceHelpWindow.setText(Snow.Gather.Parameters["Select Tool Message"]);
 	this.addWindow(this._itemChoiceHelpWindow);
 }
 
