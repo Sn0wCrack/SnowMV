@@ -141,7 +141,7 @@ PluginManager.register("SnowGather", "2.2.0", {
  *
  * Repsawning Events:
  *
- * In order for an event to actually despawn and then respawn afte the allotted
+ * In order for an event to actually despawn and then respawn after the allotted
  * time, you must first create second event page, on this page you just have to
  * have the self switch for "A" checked as a condition, leave everything else 
  * blank.
@@ -369,7 +369,7 @@ Snow.Gather.Scenes.ToolChoice = ToolChoice;
 
 // Actual Gathering Stuff
 
-Snow.Gather.Gather = function(requireItem, recievableItems, event, commonEvent) {
+Snow.Gather.Gather = function(requireItem, recievableItems, commonEvent, event) {
 	event = event || {_eventId: 0};
 	commonEvent = commonEvent || 0;
 	var eventId = event._eventId;
@@ -556,12 +556,11 @@ var Snow_Gather_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.plug
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
 	Snow_Gather_Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
-		if (args.length == 4 && Number.isInteger(args[2])) {
+		if (args.length == 4) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]), eval(args[3]));
 		} else if (args.length == 3) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), eval(args[2]));
 		} else {
-			console.log(args.length);
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]))
 		}
 		
