@@ -559,10 +559,9 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 		if (args.length == 4) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]), eval(args[3]));
 		} else if (args.length == 3) {
-			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), eval(args[2]));
+			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), 0, eval(args[2]));
 		} else {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]))
 		}
-		
 	}
 }
