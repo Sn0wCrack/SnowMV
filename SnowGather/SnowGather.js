@@ -1,12 +1,12 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.1.2
+// Version: 2.2.0
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.1.2", {
+PluginManager.register("SnowGather", "2.2.0", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
@@ -40,6 +40,10 @@ PluginManager.register("SnowGather", "2.1.2", {
  * @param Hand Tool ID
  * @desc The item ID of the tool that will be used as your hand
  * @default 10
+ *
+ * @param Hand Tool Last
+ * @desc Do you want the hand tool to appear first or last in the items list. true = yes, false = no
+ * @default false
  *
  * @param Respawning Events
  * @desc Override the default option when having a time system installed, true = ON, false = OFF
@@ -119,7 +123,7 @@ PluginManager.register("SnowGather", "2.1.2", {
  * Usage
  * ============================================================================
  * To call the script, create an event with a plugin command
- *		SnowGather  require tools [recieveable item ids] this
+ *		SnowGather  require tools [recieveable item ids] commonEventId this
  *
  * Replace require tools with true if you want the player to need tools to gather
  * items at this event, or false if you don't want them to use any tools on this
@@ -128,6 +132,9 @@ PluginManager.register("SnowGather", "2.1.2", {
  * Recievable item ids is an array that you replace with something like [7,8]
  * please note how there are not spaces in this, keep it this way or it will not
  * function correctly. This sets the items taht you can get from this event.
+ *
+ * commonEventId is the id of the common event you want to run after selecting a tool
+ * to harvest with. You may ignore this if you don't want to use it.
  *
  * this is well, always the word this, this is only required if you're using
  * a time system.
@@ -152,6 +159,7 @@ Snow.Gather.PopEvents = false;
 Snow.Gather.TempItems = [];
 Snow.Gather.TempRecItems = [];
 Snow.Gather.TempEvent = 0;
+Snow.Gather.TempCommonEvent = 0;
 
 Snow.Gather.WaitingEvents = [];
 
@@ -349,7 +357,7 @@ ToolChoice.prototype._createItemChoiceHelpWindow = function() {
 
 ToolChoice.prototype._onItemChoiceWindowOK = function() {
 	var selected = this._itemChoiceWindow.item();
-	Snow.Gather.Gather2(selected, Snow.Gather.TempRecItems, Snow.Gather.TempEvent);
+	Snow.Gather.Gather2(selected, Snow.Gather.TempRecItems, Snow.Gather.TempEvent, Snow.Gather.TempCommonEvent);
 	this.popScene();
 }
 
@@ -361,8 +369,9 @@ Snow.Gather.Scenes.ToolChoice = ToolChoice;
 
 // Actual Gathering Stuff
 
-Snow.Gather.Gather = function(requireItem, recievableItems, event) {
+Snow.Gather.Gather = function(requireItem, recievableItems, event, commonEvent) {
 	event = event || {_eventId: 0};
+	commonEvent = commonEvent || 0;
 	var eventId = event._eventId;
 	if (requireItem == false) {
 		var itemisedRecievableItems = [];
@@ -421,15 +430,18 @@ Snow.Gather.Gather = function(requireItem, recievableItems, event) {
 		
 		var hand = Snow.Gather.idIntoItem(Number(Snow.Gather.Parameters["Hand Tool ID"]));
 		
-		for (var j = 0; j < recievableItems.length; j++) {
-			for (var k = 0; k < hand.harvestChance.length; k++) {
-				if (hand.harvestChance[k].itemId == recievableItems[j]) {
-					if (!playerUsableItems.contains(hand)) {
-						playerUsableItems.push(hand);
+		if (!MVC.Boolean(Snow.Gather.Parameters["Hand Tool Last"])) {
+			for (var j = 0; j < recievableItems.length; j++) {
+				for (var k = 0; k < hand.harvestChance.length; k++) {
+					if (hand.harvestChance[k].itemId == recievableItems[j]) {
+						if (!playerUsableItems.contains(hand)) {
+							playerUsableItems.push(hand);
+						}
 					}
 				}
 			}
 		}
+
 		
 		for (var i = 0; i < playerInventory.length; i++) {
 			if (playerInventory[i].harvestChance !== []) {
@@ -439,6 +451,18 @@ Snow.Gather.Gather = function(requireItem, recievableItems, event) {
 							if (!playerUsableItems.contains(playerInventory[i])) {
 								playerUsableItems.push(playerInventory[i]);
 							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (MVC.Boolean(Snow.Gather.Parameters["Hand Tool Last"])) {
+			for (var j = 0; j < recievableItems.length; j++) {
+				for (var k = 0; k < hand.harvestChance.length; k++) {
+					if (hand.harvestChance[k].itemId == recievableItems[j]) {
+						if (!playerUsableItems.contains(hand)) {
+							playerUsableItems.push(hand);
 						}
 					}
 				}
@@ -456,15 +480,20 @@ Snow.Gather.Gather = function(requireItem, recievableItems, event) {
 		Snow.Gather.TempItems = playerUsableItems;
 		Snow.Gather.TempRecItems = itemisedRecievableItems;
 		Snow.Gather.TempEvent = eventId;
+		Snow.Gather.TempCommonEvent = commonEvent;
 		
 		SceneManager.push(Snow.Gather.Scenes.ToolChoice);
 	}
 }
 
-Snow.Gather.Gather2 = function(chosenItem, recieveableItems, eventId) {
+Snow.Gather.Gather2 = function(chosenItem, recieveableItems, eventId, commonEvent) {
 	var resourceGet = 0;
 	
 	var harvestChanceBoost = chosenItem.harvestChanceBoost || 0.0;
+	
+	if (commonEvent > 0)  {
+		$gameTemp.reserveCommonEvent(commonEvent);
+	}
 	
 	for (var i = 0; i < recieveableItems.length; i++) {
 		var gen = Snow.Gather.Round(Math.max(0, Snow.Gather.RandomInt() - harvestChanceBoost), 2);
@@ -527,9 +556,12 @@ var Snow_Gather_Game_Interpreter_pluginCommand = Game_Interpreter.prototype.plug
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
 	Snow_Gather_Game_Interpreter_pluginCommand.call(this, command, args);
 	if (command === "SnowGather") {
-		if (args[2]) {
+		if (args.length == 4 && Number.isInteger(args[2])) {
+			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), JSON.parse(args[2]), eval(args[3]));
+		} else if (args.length == 3) {
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]), eval(args[2]));
 		} else {
+			console.log(args.length);
 			Snow.Gather.Gather(JSON.parse(args[0]), JSON.parse(args[1]))
 		}
 		
