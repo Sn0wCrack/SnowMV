@@ -81,7 +81,8 @@ PluginManager.register("SnowGather", "2.2.0", {
  * In your items database you can tag any item (this means only normal items,
  * not weapons, armour, etc.) with the following tags:
  *
- * Havesting Tools:
+ * Havesting Tools: 
+ * THESE ARE PUT ON THE ITEMS YOU WANT TO USE TO HARVEST WITH IN THE NOTE TAG SECTION
  *
  * <Harvest Chance Boost: x%> - Not Required
  * This tag allows you to set an amount this particular item will boost
@@ -105,6 +106,7 @@ PluginManager.register("SnowGather", "2.2.0", {
  * trying to harvest the resource.
  *
  * Harvestables:
+ * THESE ARE PUT ON THE ITEMS YOU WANT TO BE GATHERED IN THE NOTE TAG SECTION
  *
  * <Harvest Minimum: x> - Required
  * The minimum amount of the item to be found upon the successful harvesting of 
@@ -115,6 +117,7 @@ PluginManager.register("SnowGather", "2.2.0", {
  * it.
  *
  * Events:
+ * THESE ARE PUT ON EVENTS (in the event editor page) YOU WANT TO RESPAWN IN THE NOTE TAG SECTION
  *
  * <Repspawn Time: x> - Required if you want respawing events (Requires OrangeTimeSystem)
  * Sets how long in hours you want the event to respawn in
