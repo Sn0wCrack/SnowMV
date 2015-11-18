@@ -1,7 +1,7 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.2.0
+// Version: 2.2.1
 //=============================================================================
 
 "use strict";
@@ -387,9 +387,9 @@ Snow.Gather.Gather = function(requireItem, recievableItems, commonEvent, event) 
 		
 		for (var i = 0; i < itemisedRecievableItems.length; i++) {
 			var gen = Snow.Gather.Round(Snow.Gather.RandomInt(), 2);
-			for (var j = 0; j < hand.chanceHarvest.length; j++) {
+			for (var j = 0; j < hand.harvestChance.length; j++) {
 				if (hand.chaceHarvest[j].itemId == itemisedRecievableItems[i].id) {
-					if (gen <= hand.chaceHarvest[j].chanceHarvest) {
+					if (gen <= hand.chaceHarvest[j].harvestChance) {
 						var itemGathered = Snow.Gather.RandomIntRange(itemisedRecievableItems[i].harvestMinimum, itemisedRecievableItems[i].harvestMaximum);
 						$gameParty.gainItem(itemisedRecievableItems[i], itemGathered);
 						if (MVC.Boolean(String(Snow.Gather.Parameters["Last Result Store"]))) {
