@@ -1,16 +1,16 @@
 //=============================================================================
 // SnowMV - Simple Gathering
 // SnowGather.v2.js
-// Version: 2.3.0
+// Version: 2.3.1
 //=============================================================================
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.3.0", {
+PluginManager.register("SnowGather", "2.3.1", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
-}, "2016-04-01")
+}, "2016-05-22")
 
 //=============================================================================
  /*:
@@ -180,7 +180,7 @@ DataManager.isDatabaseLoaded = function() {
 // Save and Load Stuff
 
 var Snow_Gather_DataManager_makeSaveContents = DataManager.makeSaveContents;
-DataManager.makeSaveContents = fucntion() {
+DataManager.makeSaveContents = function() {
     contents = Snow_Gather_DataManager_makeSaveContents.call(this);
     contents.gathering = Snow.Gather.WaitingEvents;
     return contents;
