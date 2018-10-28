@@ -6,11 +6,11 @@
 
 "use strict";
 
-PluginManager.register("SnowGather", "2.3.1", {
+PluginManager.register("SnowGather", "2.3.2", {
 	"email": "",
 	"website": "",
 	"name": "Sn0wCrack"
-}, "2016-05-22")
+}, "2018-10-28")
 
 //=============================================================================
  /*:
@@ -181,7 +181,7 @@ DataManager.isDatabaseLoaded = function() {
 
 var Snow_Gather_DataManager_makeSaveContents = DataManager.makeSaveContents;
 DataManager.makeSaveContents = function() {
-    contents = Snow_Gather_DataManager_makeSaveContents.call(this);
+    var contents = Snow_Gather_DataManager_makeSaveContents.call(this);
     contents.gathering = Snow.Gather.WaitingEvents;
     return contents;
 }
